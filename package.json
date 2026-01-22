@@ -14,9 +14,11 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.79",
-    "@types/react-dom": "^18.2.25",
-    "typescript": "^5.5.4",
-    "vite": "^5.4.2"
-  }
+  "@types/react": "^18.2.79",
+  "@types/react-dom": "^18.2.25",
+  "@types/node": "^20.11.30",
+  "@vercel/node": "^3.0.25",
+  "typescript": "^5.5.4",
+  "vite": "^5.4.2"
+}
 }
