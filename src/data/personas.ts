@@ -201,3 +201,94 @@ export const PERSONAS: PersonaTemplate[] = [
     ]
   }
 ];
+{
+  id: 'health_50_65_male',
+  name: '55岁男性样本',
+  ageMin: 50,
+  ageMax: 65,
+  gender: '男',
+  coreHook: '焦虑钩',
+  avatar: '/avatars/health_55_m.png',
+  lifeStage: '中老年阶段：身体风险关注+家庭代际议题',
+  emotion: '对健康风险的不可控感 + 对家庭评价/传统道德压力',
+  hookRanking: ['焦虑钩-健康恐惧', '焦虑钩-教育/家庭', '情感钩-爱国情绪'],
+  trapPaths: ['疾病信号→搜索自检→更多相似内容→焦虑升级→继续刷求确定性'],
+  baseVideos: [
+    {
+      id: 'old-health-1',
+      title: '⚠️ 这种“隐痛”可能不是小问题',
+      caption: '“很多人拖到晚期才发现…”',
+      hookCategory: '焦虑钩',
+      hookSubCategory: '健康恐惧',
+      pushLogic: '50+人群更敏感“重大疾病信号”，算法用“未知风险”驱动停留与收藏。',
+      image: '/videos/old_health_1.png'
+    },
+    {
+      id: 'old-health-2',
+      title: '🧬 体检报告这3项，建议你别忽视',
+      caption: '“看完立刻想去做检查。”',
+      hookCategory: '焦虑钩',
+      hookSubCategory: '健康恐惧',
+      pushLogic: '“体检解读”会让你反复对照自身情况，形成持续刷与搜索。',
+      image: '/videos/old_health_2.png'
+    },
+    {
+      id: 'family-1',
+      title: '🏠 子女不结婚=不孝？评论区吵翻了',
+      caption: '“老一辈的执念，到底对不对？”',
+      hookCategory: '焦虑钩',
+      hookSubCategory: '教育/家庭',
+      pushLogic: '50+更容易被代际/家庭议题触发情绪，评论区对立带来高互动。',
+      image: '/videos/family_1.png'
+    },
+    {
+      id: 'nation-1',
+      title: '🇨🇳 这一段看得人热血沸腾…',
+      caption: '“集体记忆是最强的粘性。”',
+      hookCategory: '情感钩',
+      hookSubCategory: '爱国情绪',
+      pushLogic: '宏大叙事能提供情绪托底，在焦虑内容间形成“情绪补偿”。',
+      image: '/videos/nation_1.png'
+    },
+    {
+      id: 'curious-1',
+      title: '🕵️ 真实案件细节曝光：你想不到…',
+      caption: '“越看越停不下来。”',
+      hookCategory: '解压钩',
+      hookSubCategory: '奇闻异事/大案要案',
+      pushLogic: '猎奇内容提供“转移注意力”，延长使用时长。',
+      image: '/videos/curious_1.png'
+    }
+  ],
+  interestOverrides: {
+    运动: {
+      replace: [
+        {
+          index: 3,
+          video: {
+            id: 'sport-taichi',
+            title: '☯️ 太极：适合55+的“低冲击运动”',
+            caption: '“练的是气血，也是心态。”',
+            hookCategory: '解压钩',
+            hookSubCategory: '沉浸体验',
+            pushLogic: '兴趣“运动”会把部分内容替换成运动向，但仍保留健康焦虑主线。',
+            image: '/videos/interest_taichi.png'
+          }
+        },
+        {
+          index: 4,
+          video: {
+            id: 'sport-taekwondo',
+            title: '🥋 跆拳道入门：50岁也可以开始',
+            caption: '“今天比昨天强一点。”',
+            hookCategory: '刺激钩',
+            hookSubCategory: '挑战/冒险',
+            pushLogic: '用“挑战型内容”制造兴奋与参与欲，增强停留与点赞。',
+            image: '/videos/interest_taekwondo.png'
+          }
+        }
+      ]
+    }
+  }
+}
+
