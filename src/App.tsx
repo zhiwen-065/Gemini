@@ -1,5 +1,4 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { GoogleGenAI } from '@google/genai';
 
 const HOOK_TAXONOMY = `
 DESIRE HOOK (欲望)
