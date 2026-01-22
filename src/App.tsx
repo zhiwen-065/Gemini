@@ -11,9 +11,21 @@ function matchPersona(age: number, gender: Gender): PersonaTemplate | null {
     return ageOk && genderOk;
   });
 
-  // 简单策略：优先返回“更窄年龄段”的 persona（更像精准分发）
+  // 更窄年龄段优先，像“更精准分发”
   candidates.sort((a, b) => (a.ageMax - a.ageMin) - (b.ageMax - b.ageMin));
   return candidates[0] || null;
+}
+
+function buildFeed(p: PersonaTemplate, interests: Interest[]): VideoItem[] {
+  const videos = [...p.baseVideos];
+  for (const it of interests) {
+    const rule = p.interestOverrides?.[it];
+    if (!rule) continue;
+    for (const r of rule.replace) {
+      if (r.index >= 0 && r.index < videos.length) videos[r.index] = r.video;
+    }
+  }
+  return videos.slice(0, 5);
 }
 
 function randomBg(seed: string) {
@@ -23,20 +35,14 @@ function randomBg(seed: string) {
   return `linear-gradient(135deg, hsla(${h1}, 90%, 55%, 0.55), hsla(${h2}, 90%, 55%, 0.15))`;
 }
 
-function buildFeed(p: PersonaTemplate, interests: Interest[]): VideoItem[] {
-  const videos = [...p.baseVideos];
-
-  // 每个兴趣最多替换 1-2 条（按 persona 配置）
-  for (const it of interests) {
-    const rule = p.interestOverrides?.[it];
-    if (!rule) continue;
-    for (const r of rule.replace) {
-      if (r.index >= 0 && r.index < videos.length) {
-        videos[r.index] = r.video;
-      }
-    }
-  }
-  return videos.slice(0, 5);
+function calmCopy(v: VideoItem) {
+  // 你要的“告诉大家别恐慌”的语气
+  // 这里是通用文案，你也可以按钩子细分
+  return `提示：这类内容通常是为了“抓住注意力”而设计的，不等于事实或你的真实处境。
+你可以：
+- 直接滑走（不给它完播）
+- 不点赞/不收藏（减少相似推荐）
+- 主动搜你真正想看的内容（把信号“拉回自己”）`;
 }
 
 export default function App() {
@@ -50,18 +56,18 @@ export default function App() {
   const [activePersona, setActivePersona] = useState<PersonaTemplate | null>(null);
   const [feed, setFeed] = useState<VideoItem[]>([]);
   const [revealedLogicId, setRevealedLogicId] = useState<string | null>(null);
-  const feedRef = useRef<HTMLDivElement>(null);
 
-  const personaPreview = useMemo(() => matchPersona(form.age, form.gender), [form.age, form.gender]);
+  const feedRef = useRef<HTMLDivElement>(null);
 
   const start = () => {
     const p = matchPersona(form.age, form.gender);
     if (!p) {
-      alert('没有匹配到人物库，请先在 src/data/personas.ts 增加覆盖范围。');
+      alert('没有匹配到人物库，请在 src/data/personas.ts 增加覆盖范围。');
       return;
     }
     setActivePersona(p);
     setFeed(buildFeed(p, form.interests));
+    setRevealedLogicId(null);
     setStep('dashboard');
   };
 
@@ -84,30 +90,30 @@ export default function App() {
       {/* Welcome */}
       {step === 'welcome' && (
         <div style={{ flex: 1, display: 'grid', placeItems: 'center', padding: 24 }}>
-          <div style={{ textAlign: 'center', maxWidth: 520 }}>
+          <div style={{ textAlign: 'center', maxWidth: 560 }}>
             <div style={{ fontSize: 84, fontWeight: 900, fontStyle: 'italic', letterSpacing: '-0.05em' }}>ALGO</div>
             <div style={{ marginTop: 10, opacity: 0.6, letterSpacing: '0.5em', fontSize: 10, fontWeight: 900, textTransform: 'uppercase' }}>
-              Hook-Based Feed Simulator
+              Feed Simulation
             </div>
 
-            <div style={{ marginTop: 18, opacity: 0.55, fontSize: 13, lineHeight: 1.6 }}>
-              这不是“你的人生”，这是算法为你生成的<strong>情绪路径</strong>。<br />
-              你刷到的内容，不等于事实。
+            <div style={{ marginTop: 18, opacity: 0.65, fontSize: 13, lineHeight: 1.7 }}>
+              你将看到一个“像真的一样”的刷短视频体验。<br />
+              先沉浸，再揭示：<strong>为什么它会推给你</strong>。
             </div>
 
             <button className="btn btn-primary" style={{ marginTop: 22, width: 320, padding: 18 }} onClick={() => setStep('input')}>
-              启动模拟器
+              进入设定
             </button>
           </div>
         </div>
       )}
 
-      {/* Input */}
+      {/* Input：不暴露匹配 persona 的困境词 */}
       {step === 'input' && (
         <div style={{ flex: 1, display: 'grid', placeItems: 'center', padding: 24 }}>
-          <div className="glass" style={{ width: 'min(520px, 92vw)', borderRadius: 28, padding: 20 }}>
+          <div className="glass" style={{ width: 'min(560px, 92vw)', borderRadius: 28, padding: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <div style={{ fontSize: 22, fontWeight: 900, fontStyle: 'italic' }}>人物设定</div>
+              <div style={{ fontSize: 22, fontWeight: 900, fontStyle: 'italic' }}>初始设定</div>
               <button className="btn btn-ghost" style={{ padding: '10px 14px', fontSize: 10 }} onClick={() => setStep('welcome')}>
                 Back
               </button>
@@ -152,7 +158,7 @@ export default function App() {
 
             {/* interests */}
             <div style={{ marginTop: 14 }}>
-              <div style={{ fontSize: 12, fontWeight: 900, opacity: 0.7, marginBottom: 8 }}>兴趣爱好（可多选）</div>
+              <div style={{ fontSize: 12, fontWeight: 900, opacity: 0.7, marginBottom: 8 }}>兴趣爱好（可多选，只影响少量内容）</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {INTERESTS.map((it) => {
                   const on = form.interests.includes(it);
@@ -179,24 +185,13 @@ export default function App() {
               </div>
             </div>
 
-            {/* preview */}
-            <div style={{ marginTop: 14, padding: 12, borderRadius: 18, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.04)' }}>
-              <div style={{ fontSize: 11, fontWeight: 900, opacity: 0.65, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
-                匹配到的人物（预览）
-              </div>
-              <div style={{ marginTop: 8, fontSize: 14, fontWeight: 900 }}>
-                {personaPreview ? `@${personaPreview.name}（${personaPreview.coreHook}）` : '未覆盖（去 personas.ts 增加）'}
-              </div>
-              {personaPreview && (
-                <div style={{ marginTop: 6, fontSize: 12, opacity: 0.7, lineHeight: 1.5 }}>
-                  {personaPreview.lifeStage}
-                </div>
-              )}
-            </div>
-
-            <button className="btn btn-primary" style={{ marginTop: 14, width: '100%', padding: 16 }} onClick={start}>
+            <button className="btn btn-primary" style={{ marginTop: 16, width: '100%', padding: 16 }} onClick={start}>
               开始刷视频
             </button>
+
+            <div style={{ marginTop: 10, fontSize: 12, opacity: 0.55, lineHeight: 1.5 }}>
+              说明：年龄/性别会触发“更强的默认分发路径”；兴趣只替换 1-2 条内容用于伪装“个性化”。
+            </div>
           </div>
         </div>
       )}
@@ -204,13 +199,13 @@ export default function App() {
       {/* Dashboard */}
       {step === 'dashboard' && activePersona && (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-          {/* header */}
+          {/* header：不写人生困境词，只给“角色卡”信息 */}
           <div style={{ padding: '14px 14px 10px', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(14px)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
               <div>
                 <div style={{ fontSize: 20, fontWeight: 900, fontStyle: 'italic' }}>ALGO</div>
                 <div style={{ fontSize: 12, opacity: 0.65, marginTop: 4 }}>
-                  @{activePersona.name} · {form.age}岁 · {form.gender} · 兴趣：{form.interests.length ? form.interests.join('、') : '无'}
+                  角色：{form.age}岁 · {form.gender} · 兴趣：{form.interests.length ? form.interests.join('、') : '无'}
                 </div>
               </div>
 
@@ -240,11 +235,10 @@ export default function App() {
               >
                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.92))' }} />
 
-                <div style={{ position: 'relative', zIndex: 2, maxWidth: 560, paddingBottom: 36 }}>
+                <div style={{ position: 'relative', zIndex: 2, maxWidth: 560, paddingBottom: 60 }}>
                   <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 10 }}>
                     <span className="badge">ALGO-{i + 1}</span>
                     <span className="pill">#{v.hookSubCategory}</span>
-                    <span className="pill">{v.hookCategory}</span>
                   </div>
 
                   <div style={{ fontSize: 42, fontWeight: 900, fontStyle: 'italic', letterSpacing: '-0.04em', lineHeight: 1.0 }}>
@@ -255,44 +249,36 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* side */}
-                <div style={{ position: 'absolute', right: 12, bottom: 76, zIndex: 3, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {/* right side */}
+                <div style={{ position: 'absolute', right: 12, bottom: 96, zIndex: 3, display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {['❤️', '💬', '⭐'].map((x) => (
                     <div key={x} className="glass" style={{ width: 48, height: 48, borderRadius: 999, display: 'grid', placeItems: 'center', fontSize: 20 }}>
                       {x}
                     </div>
                   ))}
+                </div>
 
+                {/* bottom action: reveal why */}
+                <div style={{ position: 'absolute', left: 18, right: 18, bottom: 18, zIndex: 3 }}>
                   <button
                     className="glass"
                     onClick={() => setRevealedLogicId(revealedLogicId === v.id ? null : v.id)}
                     style={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: 999,
-                      border: revealedLogicId === v.id ? '1px solid rgba(220,38,38,0.9)' : '1px solid rgba(255,255,255,0.10)',
-                      background: revealedLogicId === v.id ? 'rgba(220,38,38,0.85)' : 'rgba(255,255,255,0.06)',
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: 18,
+                      border: revealedLogicId === v.id ? '1px solid rgba(220,38,38,0.45)' : '1px solid rgba(255,255,255,0.10)',
+                      background: revealedLogicId === v.id ? 'rgba(220,38,38,0.12)' : 'rgba(255,255,255,0.06)',
                       color: '#fff',
-                      cursor: 'pointer',
-                      fontSize: 20
+                      fontWeight: 900,
+                      cursor: 'pointer'
                     }}
-                    title="显示推送逻辑"
                   >
-                    🧠
+                    {revealedLogicId === v.id ? '收起：为什么会推送给我？' : '为什么会推送给我？'}
                   </button>
                 </div>
 
-                {/* up/down */}
-                <div style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', zIndex: 3, display: 'flex', flexDirection: 'column', gap: 8, opacity: 0.5 }}>
-                  <button className="glass" style={{ width: 34, height: 34, borderRadius: 999, cursor: 'pointer' }} onClick={() => handleScroll('up')}>
-                    ▲
-                  </button>
-                  <button className="glass" style={{ width: 34, height: 34, borderRadius: 999, cursor: 'pointer' }} onClick={() => handleScroll('down')}>
-                    ▼
-                  </button>
-                </div>
-
-                {/* logic overlay */}
+                {/* overlay */}
                 {revealedLogicId === v.id && (
                   <div
                     onClick={() => setRevealedLogicId(null)}
@@ -300,8 +286,8 @@ export default function App() {
                     style={{
                       position: 'absolute',
                       left: 18,
-                      right: 76,
-                      bottom: 140,
+                      right: 18,
+                      bottom: 76,
                       zIndex: 4,
                       padding: 16,
                       borderRadius: 22,
@@ -310,17 +296,36 @@ export default function App() {
                       cursor: 'pointer'
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
                       <span style={{ width: 8, height: 8, borderRadius: 99, background: 'var(--red)' }} />
                       <div style={{ fontSize: 10, fontWeight: 900, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#ef4444' }}>
-                        Neural Logic Trace
+                        Why this video?
                       </div>
                     </div>
-                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.88)', fontStyle: 'italic', lineHeight: 1.5 }}>
-                      “{v.pushLogic}”
+
+                    <div style={{ fontSize: 12, lineHeight: 1.6, color: 'rgba(255,255,255,0.90)', whiteSpace: 'pre-wrap' }}>
+                      <div style={{ fontWeight: 900, marginBottom: 6 }}>
+                        钩子：{v.hookCategory} / {v.hookSubCategory}
+                      </div>
+                      <div style={{ opacity: 0.9, marginBottom: 8 }}>
+                        推送原因：{v.pushLogic}
+                      </div>
+                      <div style={{ opacity: 0.8 }}>
+                        {calmCopy(v)}
+                      </div>
                     </div>
                   </div>
                 )}
+
+                {/* up/down */}
+                <div style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', zIndex: 3, display: 'flex', flexDirection: 'column', gap: 8, opacity: 0.45 }}>
+                  <button className="glass" style={{ width: 34, height: 34, borderRadius: 999, cursor: 'pointer' }} onClick={() => handleScroll('up')}>
+                    ▲
+                  </button>
+                  <button className="glass" style={{ width: 34, height: 34, borderRadius: 999, cursor: 'pointer' }} onClick={() => handleScroll('down')}>
+                    ▼
+                  </button>
+                </div>
               </section>
             ))}
           </div>
