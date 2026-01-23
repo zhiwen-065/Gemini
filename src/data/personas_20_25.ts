@@ -1,9 +1,39 @@
-import type { PersonaTemplate } from './personas';
+// src/data/personas_20_25.ts
+import type { PersonaTemplate, Interest, VideoItem } from './personas';
 
-const V = (x: any) => x;
+const V = <T extends VideoItem>(x: T) => x;
 
+/** 快速造视频 */
+const vid = (
+  id: string,
+  title: string,
+  caption: string,
+  hookCategory: string,
+  hookSubCategory: string,
+  pushLogic: string,
+  image?: string
+) =>
+  V({
+    id,
+    title,
+    caption,
+    hookCategory,
+    hookSubCategory,
+    pushLogic,
+    image
+  });
+
+/**
+ * PERSONAS_20_25
+ * - 每岁至少 3 张卡（同龄不同命）
+ * - 每卡固定 5 条 baseVideos
+ * - 尽量贴近抖音常见内容结构：强共鸣 / 反转 / 解决方案 / 情绪补偿 / 对比叙事
+ */
 export const PERSONAS_20_25: PersonaTemplate[] = [
-  /* ===================== 20岁：大一/大二：新鲜感+社交+外貌 ===================== */
+  /* =========================================================
+   * 20岁：大一/大二：新鲜感+社交+外貌+宿舍日常+吃播
+   * ========================================================= */
+
   {
     id: 'f20_campus_social',
     name: '20岁女·校园社交派',
@@ -13,30 +43,131 @@ export const PERSONAS_20_25: PersonaTemplate[] = [
     coreHook: '情感钩',
     lifeStage: '刚适应大学，社交圈扩张期',
     emotion: '怕落单 + 想被喜欢',
-    hookRanking: ['情感钩-婚恋/社交', '欲望钩-外貌提升', '解压钩-吃播'],
-    trapPaths: ['社交焦虑→看技巧→对比→继续刷'],
+    hookRanking: ['情感钩-社交共鸣', '欲望钩-外貌提升', '解压钩-吃播日常'],
+    trapPaths: ['社交不安→看技巧→对比自己→再刷“更有效的方法”→更不安'],
     baseVideos: [
-      V({ id:'20f-1', title:'🥹 “我是不是不够会聊天？”', caption:'“为什么别人都很合群…”', hookCategory:'情感钩', hookSubCategory:'社交共鸣', pushLogic:'20岁社交敏感，代入强，评论区倾诉多。', image:'/videos/20f_social.png' }),
-      V({ id:'20f-2', title:'💄 新手妆容：一眼变“很会”', caption:'“照着做就行。”', hookCategory:'欲望钩', hookSubCategory:'外貌提升', pushLogic:'外貌提升内容高收藏，高复刷。', image:'/videos/20f_makeup.png' }),
-      V({ id:'20f-3', title:'🍜 食堂隐藏吃法：别再只会点这个', caption:'“宿舍要冲！”', hookCategory:'解压钩', hookSubCategory:'吃播/日常', pushLogic:'校园吃播低门槛强满足，完播高。', image:'/videos/20f_food.png' }),
-      V({ id:'20f-4', title:'📱 你也在半夜刷到停不下吗？', caption:'“我只是想放松一下。”', hookCategory:'解压钩', hookSubCategory:'沉浸体验', pushLogic:'用“共鸣”巩固习惯，延长时长。', image:'/videos/20f_scroll.png' }),
-      V({ id:'20f-5', title:'🔥 这套穿搭显高显瘦', caption:'“拍照绝了。”', hookCategory:'欲望钩', hookSubCategory:'外貌提升', pushLogic:'穿搭内容触发即时行动与收藏。', image:'/videos/20f_outfit.png' })
+      vid('20f_social_1', '🥹 “我是不是不够会聊天？”', '“为什么别人都很合群…”', '情感钩', '社交共鸣', '20岁社交敏感，代入强；评论区倾诉与互相安慰拉高互动。', '/videos/20/20f_social_1.png'),
+      vid('20f_social_2', '💬 3句开场白，让你不尬聊', '“照着说就行。”', '解压钩', '方法论/技巧', '“可执行技巧”让人收藏复刷；越焦虑越爱找模板。', '/videos/20/20f_social_2.png'),
+      vid('20f_food_1', '🍜 食堂隐藏吃法：别再只会点这个', '“宿舍要冲！”', '解压钩', '吃播/校园日常', '校园吃播低门槛强满足，停留与完播都高。', '/videos/20/20f_food_1.png'),
+      vid('20f_look_1', '💄 新手妆容：一眼变“很会”', '“上课也能用。”', '欲望钩', '外貌提升', '外貌提升内容天然高收藏，且容易引发“我也要试”。', '/videos/20/20f_look_1.png'),
+      vid('20f_outfit_1', '🔥 这套穿搭显高显瘦', '“拍照绝了。”', '欲望钩', '外貌提升', '穿搭=即时行动路径（收藏→下单/试穿），转化强。', '/videos/20/20f_outfit_1.png')
     ],
     interestOverrides: {
       追星: {
         replace: [
-          { index: 3, video: V({ id:'20f-idol', title:'✨ 爱豆校园风穿搭复刻', caption:'“同款氛围感来了。”', hookCategory:'情感钩', hookSubCategory:'追星沉浸', pushLogic:'追星兴趣会把沉浸内容换成直拍/同款复刻，复刷率更高。', image:'/videos/interest_idol.png' }) }
+          {
+            index: 3,
+            video: vid(
+              '20f_idol_1',
+              '✨ 爱豆校园风穿搭复刻',
+              '“同款氛围感来了。”',
+              '情感钩',
+              '追星沉浸',
+              '追星兴趣把“变美/穿搭”换成“同款复刻”，复刷率更高更像真实分发。',
+              '/videos/20/20f_idol_1.png'
+            )
+          }
         ]
       },
       美妆: {
         replace: [
-          { index: 4, video: V({ id:'20f-makeup2', title:'💋 适合学生党的平价底妆', caption:'“不贵但很像贵的。”', hookCategory:'欲望钩', hookSubCategory:'美妆种草', pushLogic:'美妆兴趣强化“平价替代”，更像真实分发。', image:'/videos/interest_makeup.png' }) }
+          {
+            index: 4,
+            video: vid(
+              '20f_makeup_2',
+              '💋 学生党平价底妆：不贵但很像贵的',
+              '“别再乱买了。”',
+              '欲望钩',
+              '美妆种草',
+              '美妆兴趣会强化“平价替代”，更贴近校园真实消费逻辑。',
+              '/videos/20/20f_makeup_2.png'
+            )
+          }
         ]
       }
     }
   },
 
-  /* ===================== 21岁：大二/大三：开始分化：学习or玩乐or身材 ===================== */
+  {
+    id: 'f20_dorm_daily',
+    name: '20岁女·宿舍日常派',
+    ageMin: 20,
+    ageMax: 20,
+    gender: '女',
+    coreHook: '解压钩',
+    lifeStage: '宿舍生活为主，喜欢轻松内容与陪伴感',
+    emotion: '需要被陪着 + 不想太累',
+    hookRanking: ['解压钩-校园日常', '情感钩-共鸣倾诉', '欲望钩-轻变美'],
+    trapPaths: ['无聊→刷日常→产生陪伴→再刷同类→时间感消失'],
+    baseVideos: [
+      vid('20f_dorm_1', '🛏️ 宿舍晚安vlog：今天就这样吧', '“你也辛苦了。”', '解压钩', '沉浸体验', '“陪伴感”内容延长停留，尤其睡前更易连刷。', '/videos/20/20f_dorm_1.png'),
+      vid('20f_dorm_2', '🍓 3分钟水果酸奶碗：学生党也能吃得像博主', '“好看又好吃。”', '解压钩', '吃播/轻料理', '简单可复制+视觉舒适，完播和收藏都高。', '/videos/20/20f_dorm_2.png'),
+      vid('20f_dorm_3', '🥲 “室友关系怎么处理？”我真的很累', '“我不想撕破脸。”', '情感钩', '社交共鸣', '室友矛盾是大学高频议题，评论区互倒苦水强互动。', '/videos/20/20f_dorm_3.png'),
+      vid('20f_dorm_4', '📱 你也在刷到停不下吗？', '“我只是想放松一下。”', '解压钩', '沉浸体验', '“共鸣自证”内容会巩固刷短视频的合理性，继续刷。', '/videos/20/20f_dorm_4.png'),
+      vid('20f_dorm_5', '✨ 低成本变好看：发型+眉形立刻提升气质', '“别再瞎折腾。”', '欲望钩', '外貌提升', '轻量变美更符合学生预算，易收藏复刷。', '/videos/20/20f_dorm_5.png')
+    ],
+    interestOverrides: {
+      宠物: {
+        replace: [
+          {
+            index: 1,
+            video: vid(
+              '20f_pet_1',
+              '🐱 宿舍云吸猫：它真的太会治愈了',
+              '“看完心软。”',
+              '解压钩',
+              '治愈日常',
+              '宠物兴趣会把“轻料理/日常”替换为治愈系，仍是解压钩主线。',
+              '/videos/20/20f_pet_1.png'
+            )
+          }
+        ]
+      }
+    }
+  },
+
+  {
+    id: 'm20_freshman_game',
+    name: '20岁男·大一新鲜派',
+    ageMin: 20,
+    ageMax: 20,
+    gender: '男',
+    coreHook: '刺激钩',
+    lifeStage: '大学新鲜期：社交+游戏+数码兴趣抬头',
+    emotion: '想赢 + 想被认可',
+    hookRanking: ['刺激钩-游戏高能', '解压钩-猎奇', '欲望钩-数码装备'],
+    trapPaths: ['高能刺激→停留→更强刺激→再看装备/技巧→继续刷'],
+    baseVideos: [
+      vid('20m_game_1', '🎮 新手上分：这波意识你学会了吗', '“我悟了。”', '刺激钩', '游戏高能', '游戏高光与教学剪辑完播高，强适配男大学生。', '/videos/20/20m_game_1.png'),
+      vid('20m_game_2', '⚡ 你敢打这个挑战吗？输了别怪我', '“不服再来一把。”', '刺激钩', '挑战/冒险', '挑战机制让人停留并想“试试”。', '/videos/20/20m_game_2.png'),
+      vid('20m_game_3', '🕵️ 校园离谱事件：真相居然是…', '“太离谱了。”', '解压钩', '猎奇反转', '校园猎奇+反转推动评论转发，连刷同类。', '/videos/20/20m_game_3.png'),
+      vid('20m_game_4', '🖱️ 外设避坑：别再买智商税', '“买对真的不一样。”', '欲望钩', '装备欲望', '装备种草=“我也需要”，促进收藏与购买。', '/videos/20/20m_game_4.png'),
+      vid('20m_game_5', '😵 熬夜打游戏的代价…你真的扛得住？', '“我不敢看。”', '焦虑钩', '健康恐惧', '在刺激流中插入健康恐惧，形成“爽完更慌”的闭环。', '/videos/20/20m_game_5.png')
+    ],
+    interestOverrides: {
+      运动: {
+        replace: [
+          {
+            index: 4,
+            video: vid(
+              '20m_sport_1',
+              '🏀 大学男生最容易练出来的身材：这样做',
+              '“别瞎练。”',
+              '刺激钩',
+              '运动挑战',
+              '运动兴趣把“健康恐惧”替换成“可执行挑战”，更像真实推荐。',
+              '/videos/20/20m_sport_1.png'
+            )
+          }
+        ]
+      }
+    }
+  },
+
+  /* =========================================================
+   * 21岁：大二/大三：开始分化：学习/玩乐/身材与形象
+   * ========================================================= */
+
   {
     id: 'm21_esports',
     name: '21岁男·游戏电竞派',
@@ -46,30 +177,113 @@ export const PERSONAS_20_25: PersonaTemplate[] = [
     coreHook: '刺激钩',
     lifeStage: '学习压力上来但想要快速刺激',
     emotion: '上头 + 胜负欲',
-    hookRanking: ['刺激钩-游戏高能', '解压钩-猎奇', '欲望钩-暴富神话'],
-    trapPaths: ['高能→停留→更高能→沉迷'],
+    hookRanking: ['刺激钩-游戏高能', '解压钩-猎奇', '欲望钩-致富神话'],
+    trapPaths: ['高能→停留→更高能→沉迷→焦虑补刀→继续刷求补偿'],
     baseVideos: [
-      V({ id:'21m-1', title:'🎮 这波操作直接封神', caption:'“手速拉满。”', hookCategory:'刺激钩', hookSubCategory:'游戏高能', pushLogic:'电竞高能剪辑完播率高，适合21岁男性。', image:'/videos/21m_game.png' }),
-      V({ id:'21m-2', title:'⚡ 你敢挑战这个段位吗？', caption:'“失败一次就上头。”', hookCategory:'刺激钩', hookSubCategory:'挑战/冒险', pushLogic:'挑战叙事驱动连刷。', image:'/videos/21m_challenge.png' }),
-      V({ id:'21m-3', title:'🕵️ 你绝对想不到真相是…', caption:'“评论区吵翻。”', hookCategory:'解压钩', hookSubCategory:'猎奇反转', pushLogic:'猎奇反转提升停留和评论。', image:'/videos/21m_curious.png' }),
-      V({ id:'21m-4', title:'💸 “副业月入过万”？别信太快', caption:'“但我还是想试…”', hookCategory:'欲望钩', hookSubCategory:'致富神话', pushLogic:'用希望钩住，再用焦虑留住。', image:'/videos/21m_myth.png' }),
-      V({ id:'21m-5', title:'😵 熬夜的代价你想不到', caption:'“但我改不了…”', hookCategory:'焦虑钩', hookSubCategory:'健康恐惧', pushLogic:'在刺激流里插入健康恐惧，形成焦虑闭环。', image:'/videos/21m_health.png' })
+      vid('21m_1', '🎮 这波操作直接封神', '“手速拉满。”', '刺激钩', '游戏高能', '电竞高能剪辑完播率高，适配21岁男性。', '/videos/21/21m_1.png'),
+      vid('21m_2', '⚡ 你敢挑战这个段位吗？', '“失败一次就上头。”', '刺激钩', '挑战/冒险', '挑战叙事驱动连刷。', '/videos/21/21m_2.png'),
+      vid('21m_3', '🕵️ 你绝对想不到真相是…', '“评论区吵翻。”', '解压钩', '猎奇反转', '猎奇反转提升停留和评论。', '/videos/21/21m_3.png'),
+      vid('21m_4', '💸 “副业月入过万”？别信太快', '“但我还是想试…”', '欲望钩', '致富神话', '用希望钩住，再用焦虑留住。', '/videos/21/21m_4.png'),
+      vid('21m_5', '😵 熬夜的代价你想不到', '“但我改不了…”', '焦虑钩', '健康恐惧', '刺激流里插健康恐惧，形成闭环。', '/videos/21/21m_5.png')
     ],
     interestOverrides: {
       游戏: {
         replace: [
-          { index: 3, video: V({ id:'21m-gear', title:'🖱️ 这套外设让你反应快一截', caption:'“装备党狂喜。”', hookCategory:'欲望钩', hookSubCategory:'装备欲望', pushLogic:'游戏兴趣会把副业神话换成装备种草，依然是欲望钩。', image:'/videos/interest_gear.png' }) }
+          {
+            index: 3,
+            video: vid(
+              '21m_gear',
+              '🖱️ 这套外设让你反应快一截',
+              '“装备党狂喜。”',
+              '欲望钩',
+              '装备欲望',
+              '游戏兴趣会把“副业神话”换成装备种草，依然是欲望钩。',
+              '/videos/21/21m_gear.png'
+            )
+          }
         ]
       },
       运动: {
         replace: [
-          { index: 4, video: V({ id:'21m-gym', title:'🏋️ 练这个动作，状态直接起飞', caption:'“一周见效？”', hookCategory:'刺激钩', hookSubCategory:'运动挑战', pushLogic:'运动兴趣把健康恐惧换成健身挑战，更容易点赞。', image:'/videos/interest_sport.png' }) }
+          {
+            index: 4,
+            video: vid(
+              '21m_gym',
+              '🏋️ 练这个动作，状态直接起飞',
+              '“一周见效？”',
+              '刺激钩',
+              '运动挑战',
+              '运动兴趣把健康恐惧替换成健身挑战，更容易点赞。',
+              '/videos/21/21m_gym.png'
+            )
+          }
         ]
       }
     }
   },
 
-  /* ===================== 22岁：大四：考研/春招二选一（同龄抽卡） ===================== */
+  {
+    id: 'f21_body_anxiety',
+    name: '21岁女·身材焦虑派',
+    ageMin: 21,
+    ageMax: 21,
+    gender: '女',
+    coreHook: '欲望钩',
+    lifeStage: '开始在意“好看/瘦/氛围感”，社交展示增加',
+    emotion: '怕不够好看 + 讨好型努力',
+    hookRanking: ['欲望钩-外貌提升', '焦虑钩-健康恐惧', '情感钩-对比共鸣'],
+    trapPaths: ['变美内容→对比→更想变美→身体焦虑→继续刷'],
+    baseVideos: [
+      vid('21f_body_1', '✨ 这套“显瘦拍照姿势”太绝了', '“腿立刻变长。”', '欲望钩', '外貌提升', '拍照技巧低门槛+立竿见影，收藏强。', '/videos/21/21f_body_1.png'),
+      vid('21f_body_2', '🍵 “轻断食”真的安全吗？别被带节奏', '“看完我慌了。”', '焦虑钩', '健康恐惧', '用“风险”制造不确定性，促使反复观看。', '/videos/21/21f_body_2.png'),
+      vid('21f_body_3', '🥲 “我怎么越来越不自信了？”', '“我也会突然想哭。”', '情感钩', '共鸣倾诉', '情绪共鸣引导评论自曝，增强粘性。', '/videos/21/21f_body_3.png'),
+      vid('21f_body_4', '💄 伪素颜：看起来像天生好看', '“上课也能用。”', '欲望钩', '美妆种草', '伪素颜最贴校园场景，复刷收藏高。', '/videos/21/21f_body_4.png'),
+      vid('21f_body_5', '🍜 深夜吃播：越看越饿越焦虑', '“我就是停不下…”', '解压钩', '吃播/情绪补偿', '情绪补偿带来短暂安慰，但延长刷屏时长。', '/videos/21/21f_body_5.png')
+    ],
+    interestOverrides: {
+      运动: {
+        replace: [
+          {
+            index: 4,
+            video: vid(
+              '21f_sport_1',
+              '💃 3分钟跟练：跳完心情变好',
+              '“先把自己哄好。”',
+              '解压钩',
+              '沉浸体验',
+              '运动兴趣会把吃播替换成跟练/舞蹈，仍是“情绪补偿”。',
+              '/videos/21/21f_sport_1.png'
+            )
+          }
+        ]
+      }
+    }
+  },
+
+  {
+    id: 'm21_study_switch',
+    name: '21岁男·开始卷学派',
+    ageMin: 21,
+    ageMax: 21,
+    gender: '男',
+    coreHook: '焦虑钩',
+    lifeStage: '绩点/竞赛/保研信息开始影响选择',
+    emotion: '怕掉队 + 需要确定性',
+    hookRanking: ['焦虑钩-教育/效率', '焦虑钩-职业路径', '解压钩-猎奇'],
+    trapPaths: ['效率焦虑→刷方法→更焦虑→继续刷→睡前补偿猎奇'],
+    baseVideos: [
+      vid('21m_study_1', '⏱️ 学不进去？你可能是方法错了', '“不是你懒。”', '焦虑钩', '效率焦虑', '“你做错了”制造不确定性，促复刷。', '/videos/21/21m_study_1.png'),
+      vid('21m_study_2', '📌 保研/竞赛：这条路值不值？', '“信息差太恐怖。”', '焦虑钩', '职业路径', '路径选择内容高停留，容易引发“我也在纠结”。', '/videos/21/21m_study_2.png'),
+      vid('21m_study_3', '🧠 记忆法：背不下来真不是你笨', '“原来如此。”', '焦虑钩', '效率焦虑', '工具型内容收藏强，反复看。', '/videos/21/21m_study_3.png'),
+      vid('21m_study_4', '🕵️ 校园离谱瓜：后续反转了', '“我笑了。”', '解压钩', '猎奇反转', '压力大时更容易用猎奇转移注意力。', '/videos/21/21m_study_4.png'),
+      vid('21m_study_5', '😵 熬夜学习反而更差？', '“我被说中了。”', '焦虑钩', '健康恐惧', '健康恐惧作为“补刀”，让你更焦虑更想找解法。', '/videos/21/21m_study_5.png')
+    ]
+  },
+
+  /* =========================================================
+   * 22岁：大四：考研/春招/毕业焦虑（同龄抽卡）
+   * ========================================================= */
+
   {
     id: 'f22_kaoyan',
     name: '22岁女·大四考研派',
@@ -80,15 +294,16 @@ export const PERSONAS_20_25: PersonaTemplate[] = [
     lifeStage: '大四备考，时间紧迫',
     emotion: '害怕失败 + 自我怀疑',
     hookRanking: ['焦虑钩-教育/考试', '解压钩-沉浸', '情感钩-共鸣'],
-    trapPaths: ['焦虑→方法论→更多焦虑→继续刷'],
+    trapPaths: ['焦虑→方法论→更焦虑→缓释→继续刷'],
     baseVideos: [
-      V({ id:'22f-1', title:'📚 考研倒计时：你现在该做什么', caption:'“别再假努力。”', hookCategory:'焦虑钩', hookSubCategory:'教育/考试', pushLogic:'22岁考研群体对“方法论”强依赖，收藏率高。', image:'/videos/22f_kaoyan1.png' }),
-      V({ id:'22f-2', title:'📝 真题这样刷，效率翻倍', caption:'“90%的人用错方法。”', hookCategory:'焦虑钩', hookSubCategory:'教育/考试', pushLogic:'“你做错了”制造不确定性，促使反复观看。', image:'/videos/22f_kaoyan2.png' }),
-      V({ id:'22f-3', title:'🥲 我每天学12小时还是很慌', caption:'“你也是吗？”', hookCategory:'情感钩', hookSubCategory:'共鸣倾诉', pushLogic:'共鸣内容引发评论自曝与抱团。', image:'/videos/22f_kaoyan3.png' }),
-      V({ id:'22f-4', title:'🫧 3分钟白噪音：把心稳住', caption:'“别崩。”', hookCategory:'解压钩', hookSubCategory:'沉浸体验', pushLogic:'焦虑后给缓释，反而更容易继续刷。', image:'/videos/22f_relief.png' }),
-      V({ id:'22f-5', title:'⚠️ 熬夜会让记忆力崩掉', caption:'“但我停不下…”', hookCategory:'焦虑钩', hookSubCategory:'健康恐惧', pushLogic:'考试焦虑叠加健康恐惧，形成闭环。', image:'/videos/22f_health.png' })
+      vid('22f_k_1', '📚 考研倒计时：你现在该做什么', '“别再假努力。”', '焦虑钩', '教育/考试', '22岁考研群体对“方法论”依赖强，收藏率高。', '/videos/22/22f_k_1.png'),
+      vid('22f_k_2', '📝 真题这样刷，效率翻倍', '“90%的人用错方法。”', '焦虑钩', '教育/考试', '“你做错了”制造不确定性，促反复观看。', '/videos/22/22f_k_2.png'),
+      vid('22f_k_3', '🥲 我每天学12小时还是很慌', '“你也是吗？”', '情感钩', '共鸣倾诉', '共鸣内容引发自曝与抱团，互动强。', '/videos/22/22f_k_3.png'),
+      vid('22f_k_4', '🫧 3分钟白噪音：把心稳住', '“别崩。”', '解压钩', '沉浸体验', '焦虑后给缓释，反而更容易继续刷。', '/videos/22/22f_k_4.png'),
+      vid('22f_k_5', '⚠️ 熬夜会让记忆力崩掉', '“但我停不下…”', '焦虑钩', '健康恐惧', '考试焦虑叠加健康恐惧，形成闭环。', '/videos/22/22f_k_5.png')
     ]
   },
+
   {
     id: 'f22_chunzhao',
     name: '22岁女·大四春招派',
@@ -98,18 +313,41 @@ export const PERSONAS_20_25: PersonaTemplate[] = [
     coreHook: '焦虑钩',
     lifeStage: '春招/实习转正压力',
     emotion: '害怕落后同龄人',
-    hookRanking: ['焦虑钩-就业', '情感钩-对比', '解压钩-吃播'],
-    trapPaths: ['焦虑→刷经验→更焦虑→继续刷'],
+    hookRanking: ['焦虑钩-就业', '情感钩-对比', '解压钩-吃播补偿'],
+    trapPaths: ['拒信→刷经验→更焦虑→吃播补偿→继续刷'],
     baseVideos: [
-      V({ id:'22fJ-1', title:'😰 春招投递：我被拒麻了', caption:'“到底哪里不对？”', hookCategory:'焦虑钩', hookSubCategory:'就业/实习', pushLogic:'22岁毕业求职对拒信极敏感，停留与评论高。', image:'/videos/22f_job1.png' }),
-      V({ id:'22fJ-2', title:'🧠 面试必问：你答对了吗？', caption:'“别再踩坑。”', hookCategory:'焦虑钩', hookSubCategory:'就业/面试', pushLogic:'“解决方案”内容促进收藏与复刷。', image:'/videos/22f_job2.png' }),
-      V({ id:'22fJ-3', title:'🥲 同学都拿offer了，我还在…', caption:'“我是不是太差了？”', hookCategory:'情感钩', hookSubCategory:'同龄对比', pushLogic:'对比叙事引发自曝与安慰，互动强。', image:'/videos/22f_job3.png' }),
-      V({ id:'22fJ-4', title:'🍜 深夜吃播：边看边焦虑', caption:'“我就是停不下来。”', hookCategory:'解压钩', hookSubCategory:'吃播/情绪补偿', pushLogic:'情绪补偿型吃播降低压力，但延长刷时长。', image:'/videos/22f_job4.png' }),
-      V({ id:'22fJ-5', title:'⚠️ 这3个身体信号别忽视', caption:'“焦虑真的会反噬。”', hookCategory:'焦虑钩', hookSubCategory:'健康恐惧', pushLogic:'就业压力叠加健康恐惧，形成循环。', image:'/videos/22f_job5.png' })
+      vid('22f_j_1', '😰 春招投递：我被拒麻了', '“到底哪里不对？”', '焦虑钩', '就业/实习', '毕业求职对拒信极敏感，停留与评论高。', '/videos/22/22f_j_1.png'),
+      vid('22f_j_2', '🧠 面试必问：你答对了吗？', '“别再踩坑。”', '焦虑钩', '就业/面试', '“避坑/答案”型内容促进收藏复刷。', '/videos/22/22f_j_2.png'),
+      vid('22f_j_3', '🥲 同学都拿offer了，我还在…', '“我是不是太差了？”', '情感钩', '同龄对比', '对比叙事引发自曝与安慰，互动强。', '/videos/22/22f_j_3.png'),
+      vid('22f_j_4', '🍜 深夜吃播：边看边焦虑', '“我就是停不下来。”', '解压钩', '吃播/情绪补偿', '吃播给短暂安慰，但延长使用时长。', '/videos/22/22f_j_4.png'),
+      vid('22f_j_5', '⚠️ 焦虑的人最容易出现的3个身体信号', '“我慌了…”', '焦虑钩', '健康恐惧', '就业压力叠加健康恐惧，持续循环。', '/videos/22/22f_j_5.png')
     ]
   },
 
-  /* ===================== 23岁：研究生一年级：信息差/实习/容貌与关系继续存在 ===================== */
+  {
+    id: 'm22_grad_pressure',
+    name: '22岁男·毕业去向焦虑派',
+    ageMin: 22,
+    ageMax: 22,
+    gender: '男',
+    coreHook: '焦虑钩',
+    lifeStage: '毕业抉择：考研/就业/考公摇摆',
+    emotion: '怕选错路 + 怕浪费一年',
+    hookRanking: ['焦虑钩-职业路径', '焦虑钩-就业/面试', '解压钩-猎奇'],
+    trapPaths: ['路径焦虑→刷比较→更焦虑→刷面试题→睡前猎奇补偿'],
+    baseVideos: [
+      vid('22m_path_1', '🧭 “考公还是去大厂？”我真的选不出来', '“每条路都像陷阱。”', '焦虑钩', '职业路径', '毕业路径选择是22岁男性高频焦虑主题，停留高。', '/videos/22/22m_path_1.png'),
+      vid('22m_path_2', '📌 这3类岗位别碰？真相更残酷', '“看完更慌。”', '焦虑钩', '就业/市场', '“风险预警”强化不确定性，促连刷。', '/videos/22/22m_path_2.png'),
+      vid('22m_path_3', '🧠 面试：自我介绍这样说更稳', '“照着改就行。”', '焦虑钩', '就业/面试', '可执行模板=收藏复刷。', '/videos/22/22m_path_3.png'),
+      vid('22m_path_4', '🕵️ 离谱职场瓜：反转太大了', '“我笑了。”', '解压钩', '猎奇反转', '焦虑后用猎奇做情绪补偿，延长时长。', '/videos/22/22m_path_4.png'),
+      vid('22m_path_5', '⚠️ 熬夜焦虑会让你更“失控”', '“怪不得我这样…”', '焦虑钩', '健康恐惧', '用健康恐惧做补刀，促使刷更多“自救”。', '/videos/22/22m_path_5.png')
+    ]
+  },
+
+  /* =========================================================
+   * 23岁：研一/刚实习：信息差+方向+实习+对比
+   * ========================================================= */
+
   {
     id: 'f23_master1',
     name: '23岁女·研一信息差派',
@@ -119,18 +357,61 @@ export const PERSONAS_20_25: PersonaTemplate[] = [
     coreHook: '焦虑钩',
     lifeStage: '研一：实习/方向选择，担心走错路',
     emotion: '信息差恐惧 + 不确定性',
-    hookRanking: ['焦虑钩-职业路径', '解压钩-沉浸', '欲望钩-外貌提升'],
-    trapPaths: ['信息焦虑→刷攻略→更焦虑→继续刷'],
+    hookRanking: ['焦虑钩-职业路径', '焦虑钩-实习求职', '情感钩-对比'],
+    trapPaths: ['信息焦虑→刷攻略→更焦虑→对比→继续刷'],
     baseVideos: [
-      V({ id:'23f-1', title:'🧭 研一最怕的不是忙，是走错方向', caption:'“你选对了吗？”', hookCategory:'焦虑钩', hookSubCategory:'职业路径', pushLogic:'研一对“方向选择”焦虑高，攻略类内容复刷强。', image:'/videos/23f_path.png' }),
-      V({ id:'23f-2', title:'💼 这类实习最值：不做会后悔', caption:'“别只看title。”', hookCategory:'焦虑钩', hookSubCategory:'实习/求职', pushLogic:'用“错过就亏”刺激收藏与转发。', image:'/videos/23f_intern.png' }),
-      V({ id:'23f-3', title:'💄 研究生也要精致：低成本变好看', caption:'“开会不怯场。”', hookCategory:'欲望钩', hookSubCategory:'外貌提升', pushLogic:'外貌提升作为“自我补偿”，提升粘性。', image:'/videos/23f_makeup.png' }),
-      V({ id:'23f-4', title:'🫧 白噪音：把心稳住再干活', caption:'“别崩。”', hookCategory:'解压钩', hookSubCategory:'沉浸体验', pushLogic:'学习/科研压力后插入缓释内容，延长时长。', image:'/videos/23f_noise.png' }),
-      V({ id:'23f-5', title:'😶 同龄人都在赚钱，我还在读书', caption:'“我是不是落后了？”', hookCategory:'情感钩', hookSubCategory:'同龄对比', pushLogic:'对比叙事极易引发评论区自曝。', image:'/videos/23f_compare.png' })
+      vid('23f_1', '🧭 研一最怕的不是忙，是走错方向', '“你选对了吗？”', '焦虑钩', '职业路径', '研一对方向选择焦虑高，攻略内容复刷强。', '/videos/23/23f_1.png'),
+      vid('23f_2', '💼 这类实习最值：不做会后悔', '“别只看title。”', '焦虑钩', '实习/求职', '“错过就亏”刺激收藏与转发。', '/videos/23/23f_2.png'),
+      vid('23f_3', '😶 同龄人都在赚钱，我还在读书', '“我是不是落后了？”', '情感钩', '同龄对比', '对比叙事引发评论自曝与争论。', '/videos/23/23f_3.png'),
+      vid('23f_4', '🫧 白噪音：把心稳住再干活', '“别崩。”', '解压钩', '沉浸体验', '科研/学习压力后插入缓释，延长时长。', '/videos/23/23f_4.png'),
+      vid('23f_5', '💄 低成本变好看：开会不怯场', '“气质真的会变。”', '欲望钩', '外貌提升', '变美作为补偿与控制感来源，增强粘性。', '/videos/23/23f_5.png')
     ]
   },
 
-  /* ===================== 24岁：研二/研三：毕业焦虑+论文+求职 ===================== */
+  {
+    id: 'm23_master1_skills',
+    name: '23岁男·研一技能焦虑派',
+    ageMin: 23,
+    ageMax: 23,
+    gender: '男',
+    coreHook: '焦虑钩',
+    lifeStage: '研一：技能补齐窗口期，担心落后',
+    emotion: '怕“能力不够” + 怕错过机会',
+    hookRanking: ['焦虑钩-就业/技能', '焦虑钩-效率', '解压钩-猎奇'],
+    trapPaths: ['技能焦虑→刷教程→更焦虑→再刷→深夜猎奇补偿'],
+    baseVideos: [
+      vid('23m_1', '📌 “不会这些=没竞争力？”我开始慌了', '“信息差太狠。”', '焦虑钩', '就业/技能', '用“门槛话术”制造焦虑，促收藏复刷。', '/videos/23/23m_1.png'),
+      vid('23m_2', '🧠 面试题：这题你真的会吗？', '“别硬背。”', '焦虑钩', '就业/面试', '题目型内容促进反复观看与收藏。', '/videos/23/23m_2.png'),
+      vid('23m_3', '⏱️ 你学不进去不是懒，是环境错了', '“照着改就行。”', '焦虑钩', '效率焦虑', '“可执行改造”让人继续刷找更多方案。', '/videos/23/23m_3.png'),
+      vid('23m_4', '🕵️ 你绝对想不到真相是…', '“越看越上头。”', '解压钩', '猎奇反转', '高压人群更易用猎奇转移注意力。', '/videos/23/23m_4.png'),
+      vid('23m_5', '⚠️ 熬夜会让你更焦虑更暴躁', '“怪不得我这样。”', '焦虑钩', '健康恐惧', '健康恐惧补刀，让人继续刷“自救”。', '/videos/23/23m_5.png')
+    ]
+  },
+
+  {
+    id: 'f23_city_intern_life',
+    name: '23岁女·外地实习生活派',
+    ageMin: 23,
+    ageMax: 23,
+    gender: '女',
+    coreHook: '焦虑钩',
+    lifeStage: '异地实习：通勤/租房/社交断层',
+    emotion: '孤独 + 怕撑不下去',
+    hookRanking: ['焦虑钩-城市生存', '情感钩-孤独共鸣', '解压钩-吃播'],
+    trapPaths: ['城市疲惫→刷共鸣→更难受→吃播补偿→继续刷'],
+    baseVideos: [
+      vid('23f_city_1', '🚇 实习通勤2小时，我快碎了', '“每天像被掏空。”', '焦虑钩', '城市生存', '通勤痛点强共鸣，评论区会爆“我也是”。', '/videos/23/23f_city_1.png'),
+      vid('23f_city_2', '🏠 合租避坑：这条不看真的会踩雷', '“血泪教训。”', '焦虑钩', '城市生存', '避坑内容结构化强收藏，复刷强。', '/videos/23/23f_city_2.png'),
+      vid('23f_city_3', '🥲 “我在大城市没有朋友”', '“我也好想回家。”', '情感钩', '孤独共鸣', '孤独共鸣引导倾诉，停留与评论强。', '/videos/23/23f_city_3.png'),
+      vid('23f_city_4', '🍜 下班吃播：我就靠这一口活着', '“别骂我。”', '解压钩', '吃播/情绪补偿', '情绪补偿型吃播延长刷屏时长。', '/videos/23/23f_city_4.png'),
+      vid('23f_city_5', '🫧 10分钟：把心稳住再睡', '“先不崩。”', '解压钩', '治愈放松', '睡前治愈内容让人继续刷“安慰”。', '/videos/23/23f_city_5.png')
+    ]
+  },
+
+  /* =========================================================
+   * 24岁：研二/研三：论文+实习+秋招；或已工作但焦虑更强
+   * ========================================================= */
+
   {
     id: 'm24_master2_job',
     name: '24岁男·研二求职派',
@@ -139,19 +420,80 @@ export const PERSONAS_20_25: PersonaTemplate[] = [
     gender: '男',
     coreHook: '焦虑钩',
     lifeStage: '研二：论文+实习+秋招三线压力',
-    emotion: '时间不够 + 害怕错过窗口期',
-    hookRanking: ['焦虑钩-就业', '焦虑钩-效率', '解压钩-猎奇'],
-    trapPaths: ['焦虑→刷方法→更焦虑→继续刷'],
+    emotion: '时间不够 + 怕错过窗口期',
+    hookRanking: ['焦虑钩-就业/秋招', '焦虑钩-效率', '解压钩-猎奇'],
+    trapPaths: ['焦虑→刷方法→更焦虑→猎奇补偿→继续刷'],
     baseVideos: [
-      V({ id:'24m-1', title:'📉 秋招形势：今年更难了？', caption:'“我开始慌了。”', hookCategory:'焦虑钩', hookSubCategory:'就业/秋招', pushLogic:'24岁求职窗口期强，危机叙事提升停留。', image:'/videos/24m_job.png' }),
-      V({ id:'24m-2', title:'🧠 面试算法：这题你会吗？', caption:'“别硬背。”', hookCategory:'焦虑钩', hookSubCategory:'就业/面试', pushLogic:'技能题促使反复观看与收藏。', image:'/videos/24m_interview.png' }),
-      V({ id:'24m-3', title:'⏱️ 论文拖延怎么办？这招太狠', caption:'“立刻能用。”', hookCategory:'焦虑钩', hookSubCategory:'效率/自律焦虑', pushLogic:'“效率解决方案”让人觉得有用，从而继续刷。', image:'/videos/24m_thesis.png' }),
-      V({ id:'24m-4', title:'🕵️ 你绝对想不到真相是…', caption:'“越看越上头。”', hookCategory:'解压钩', hookSubCategory:'猎奇反转', pushLogic:'高压人群需要转移注意力，猎奇是出口。', image:'/videos/24m_curious.png' }),
-      V({ id:'24m-5', title:'⚠️ 熬夜会让你更焦虑', caption:'“但我改不了…”', hookCategory:'焦虑钩', hookSubCategory:'健康恐惧', pushLogic:'高压+健康恐惧形成闭环。', image:'/videos/24m_health.png' })
+      vid('24m_1', '📉 秋招形势：今年更难了？', '“我开始慌了。”', '焦虑钩', '就业/秋招', '窗口期危机叙事提升停留与转发。', '/videos/24/24m_1.png'),
+      vid('24m_2', '🧠 面试算法：这题你会吗？', '“别硬背。”', '焦虑钩', '就业/面试', '题目型内容收藏复刷强。', '/videos/24/24m_2.png'),
+      vid('24m_3', '⏱️ 论文拖延怎么办？这招太狠', '“立刻能用。”', '焦虑钩', '效率/自律焦虑', '效率解决方案让你继续刷找更多工具。', '/videos/24/24m_3.png'),
+      vid('24m_4', '🕵️ 你绝对想不到真相是…', '“越看越上头。”', '解压钩', '猎奇反转', '高压人群需要注意力转移，猎奇是出口。', '/videos/24/24m_4.png'),
+      vid('24m_5', '⚠️ 熬夜会让你更焦虑', '“但我改不了…”', '焦虑钩', '健康恐惧', '高压+健康恐惧闭环，让人继续刷“自救”。', '/videos/24/24m_5.png')
     ]
   },
 
-  /* ===================== 25岁：研究生毕业/刚入职：第一份工作焦虑+城市生存 ===================== */
+  {
+    id: 'f24_master2_thesis',
+    name: '24岁女·研二论文崩溃派',
+    ageMin: 24,
+    ageMax: 24,
+    gender: '女',
+    coreHook: '焦虑钩',
+    lifeStage: '研二：论文/实验/导师压力叠加',
+    emotion: '自我怀疑 + 害怕被否定',
+    hookRanking: ['焦虑钩-教育/论文', '情感钩-共鸣倾诉', '解压钩-沉浸'],
+    trapPaths: ['被否定→刷方法→更焦虑→共鸣→继续刷'],
+    baseVideos: [
+      vid('24f_1', '📝 论文写不动？你不是一个人', '“我真的要崩。”', '情感钩', '共鸣倾诉', '共鸣倾诉让人停留并在评论区抱团。', '/videos/24/24f_1.png'),
+      vid('24f_2', '📌 论文结构：老师最爱看这一套', '“照抄就行。”', '焦虑钩', '教育/论文', '结构模板型内容收藏复刷强。', '/videos/24/24f_2.png'),
+      vid('24f_3', '💼 研二实习怎么选？别被title骗了', '“信息差太狠。”', '焦虑钩', '实习/求职', '实习选择焦虑+信息差，容易连刷攻略。', '/videos/24/24f_3.png'),
+      vid('24f_4', '🫧 沉浸式自习：把心稳住再写', '“先不崩。”', '解压钩', '沉浸体验', '沉浸内容提供陪伴感，让人刷更久。', '/videos/24/24f_4.png'),
+      vid('24f_5', '⚠️ 焦虑会让你“胃不舒服/睡不着”', '“我中了。”', '焦虑钩', '健康恐惧', '把情绪问题身体化，促使你继续刷“自检”。', '/videos/24/24f_5.png')
+    ],
+    interestOverrides: {
+      美妆: {
+        replace: [
+          {
+            index: 4,
+            video: vid(
+              '24f_makeup_1',
+              '💄 “面试/答辩”提气色：5分钟搞定',
+              '“看起来更稳。”',
+              '欲望钩',
+              '外貌提升',
+              '美妆兴趣把健康恐惧替换成“气色稳”，更符合抖音分发的“场景化”。',
+              '/videos/24/24f_makeup_1.png'
+            )
+          }
+        ]
+      }
+    }
+  },
+
+  {
+    id: 'm24_city_rent',
+    name: '24岁男·实习北漂通勤派',
+    ageMin: 24,
+    ageMax: 24,
+    gender: '男',
+    coreHook: '焦虑钩',
+    lifeStage: '实习/工作试水：租房+通勤+现金流',
+    emotion: '疲惫 + 失控感',
+    hookRanking: ['焦虑钩-城市生存', '焦虑钩-财务', '解压钩-吃播'],
+    trapPaths: ['通勤疲惫→刷共鸣→更疲惫→吃播补偿→继续刷'],
+    baseVideos: [
+      vid('24m_city_1', '🚇 通勤2小时的北漂：我到底在图什么', '“每天像打仗。”', '焦虑钩', '城市生存', '城市生存内容强共鸣，评论区对比拉互动。', '/videos/24/24m_city_1.png'),
+      vid('24m_city_2', '🏠 租房避坑：中介不会告诉你的事', '“别再被坑。”', '焦虑钩', '城市生存', '避坑结构促进收藏复刷。', '/videos/24/24m_city_2.png'),
+      vid('24m_city_3', '💳 月底只剩300？你需要现金流意识', '“我开始慌了。”', '焦虑钩', '财务焦虑', '现金流焦虑会触发“自查”，促使连刷理财类。', '/videos/24/24m_city_3.png'),
+      vid('24m_city_4', '🍗 下班吃播：我就靠这一口活着', '“别骂我。”', '解压钩', '吃播/情绪补偿', '情绪补偿延长使用时长。', '/videos/24/24m_city_4.png'),
+      vid('24m_city_5', '⚠️ 你越焦虑越睡不着，然后更焦虑', '“我懂了。”', '焦虑钩', '健康恐惧', '把睡眠问题焦虑化，形成闭环。', '/videos/24/24m_city_5.png')
+    ]
+  },
+
+  /* =========================================================
+   * 25岁：研毕/刚入职：新人职场+绩效+租房+同龄对比
+   * ========================================================= */
+
   {
     id: 'f25_newhire',
     name: '25岁女·研毕入职派',
@@ -161,15 +503,72 @@ export const PERSONAS_20_25: PersonaTemplate[] = [
     coreHook: '焦虑钩',
     lifeStage: '研毕刚入职：适应期+绩效压力',
     emotion: '怕犯错 + 怕不被认可',
-    hookRanking: ['焦虑钩-职业', '情感钩-同龄对比', '解压钩-治愈'],
-    trapPaths: ['焦虑→刷攻略→更焦虑→继续刷'],
+    hookRanking: ['焦虑钩-职场适应', '情感钩-同龄对比', '解压钩-治愈'],
+    trapPaths: ['犯错恐惧→刷避坑→更怕→对比同龄→继续刷'],
     baseVideos: [
-      V({ id:'25f-1', title:'😰 第一份工作最怕的不是累，是被否定', caption:'“我每天都在装懂。”', hookCategory:'焦虑钩', hookSubCategory:'职场适应', pushLogic:'25岁入职期对评价敏感，职场攻略复刷强。', image:'/videos/25f_work.png' }),
-      V({ id:'25f-2', title:'📌 新人避坑：这3件事别做', caption:'“我后悔了。”', hookCategory:'焦虑钩', hookSubCategory:'职场生存', pushLogic:'“避坑”结构天然利于收藏。', image:'/videos/25f_pitfall.png' }),
-      V({ id:'25f-3', title:'🏠 租房/通勤把我榨干了', caption:'“大城市真的难。”', hookCategory:'焦虑钩', hookSubCategory:'城市生存',
-      pushLogic:'城市生存压力强共鸣，易引发评论对比。', image:'/videos/25f_city.png' }),
-      V({ id:'25f-4', title:'🥲 同龄人都升职加薪了…', caption:'“只有我在原地。”', hookCategory:'情感钩', hookSubCategory:'同龄对比', pushLogic:'对比叙事放大不安全感，增强停留。', image:'/videos/25f_compare.png' }),
-      V({ id:'25f-5', title:'🫧 10分钟：把情绪放下', caption:'“先稳住自己。”', hookCategory:'解压钩', hookSubCategory:'治愈放松', pushLogic:'给一个情绪出口让你继续刷，而不是退出。', image:'/videos/25f_relief.png' })
+      vid('25f_1', '😰 第一份工作最怕的不是累，是被否定', '“我每天都在装懂。”', '焦虑钩', '职场适应', '新人期对评价敏感，职场攻略复刷强。', '/videos/25/25f_1.png'),
+      vid('25f_2', '📌 新人避坑：这3件事别做', '“我后悔了。”', '焦虑钩', '职场生存', '避坑结构天然利于收藏。', '/videos/25/25f_2.png'),
+      vid('25f_3', '🏠 租房/通勤把我榨干了', '“大城市真的难。”', '焦虑钩', '城市生存', '城市生存压力强共鸣，评论对比多。', '/videos/25/25f_3.png'),
+      vid('25f_4', '🥲 同龄人都升职加薪了…', '“只有我在原地。”', '情感钩', '同龄对比', '对比叙事放大不安全感，增强停留。', '/videos/25/25f_4.png'),
+      vid('25f_5', '🫧 10分钟：把情绪放下', '“先稳住自己。”', '解压钩', '治愈放松', '给情绪出口，让你继续刷而不是退出。', '/videos/25/25f_5.png')
+    ]
+  },
+
+  {
+    id: 'm25_newhire_perf',
+    name: '25岁男·新人绩效派',
+    ageMin: 25,
+    ageMax: 25,
+    gender: '男',
+    coreHook: '焦虑钩',
+    lifeStage: '刚入职：KPI/汇报/试用期压力',
+    emotion: '怕被淘汰 + 需要掌控感',
+    hookRanking: ['焦虑钩-职场适应', '焦虑钩-财务', '解压钩-猎奇'],
+    trapPaths: ['绩效焦虑→刷职场话术→更焦虑→猎奇补偿→继续刷'],
+    baseVideos: [
+      vid('25m_1', '📉 试用期最危险的不是不会，是不会“汇报”', '“我懂了。”', '焦虑钩', '职场适应', '汇报话术类内容收藏复刷强。', '/videos/25/25m_1.png'),
+      vid('25m_2', '🧠 周报这样写：领导一眼就懂', '“照抄模板。”', '焦虑钩', '职场生存', '模板式内容强收藏，适配新人。', '/videos/25/25m_2.png'),
+      vid('25m_3', '💳 工资一到手就没了？你缺的是现金流意识', '“我开始慌。”', '焦虑钩', '财务焦虑', '现金流焦虑会让人继续刷理财与省钱。', '/videos/25/25m_3.png'),
+      vid('25m_4', '🕵️ 离谱职场瓜：真相太反转', '“笑死。”', '解压钩', '猎奇反转', '高压人群用瓜做情绪补偿，延长时长。', '/videos/25/25m_4.png'),
+      vid('25m_5', '⚠️ 焦虑会让你“失眠/心慌”', '“我中了。”', '焦虑钩', '健康恐惧', '身体化焦虑让你更想找“自救”。', '/videos/25/25m_5.png')
+    ],
+    interestOverrides: {
+      游戏: {
+        replace: [
+          {
+            index: 4,
+            video: vid(
+              '25m_game_1',
+              '🎮 下班一把：把脑子关掉10分钟',
+              '“就这一下爽。”',
+              '解压钩',
+              '游戏解压',
+              '游戏兴趣会把健康恐惧替换成“下班解压”，更贴现实。',
+              '/videos/25/25m_game_1.png'
+            )
+          }
+        ]
+      }
+    }
+  },
+
+  {
+    id: 'f25_city_single',
+    name: '25岁女·大城市独居派',
+    ageMin: 25,
+    ageMax: 25,
+    gender: '女',
+    coreHook: '情感钩',
+    lifeStage: '工作初期：独居/社交断层/情绪波动',
+    emotion: '孤独 + 自我价值感不稳',
+    hookRanking: ['情感钩-孤独共鸣', '焦虑钩-城市生存', '解压钩-治愈'],
+    trapPaths: ['孤独→刷共鸣→更孤独→治愈补偿→继续刷'],
+    baseVideos: [
+      vid('25f_solo_1', '🌙 独居的夜晚：突然就想哭', '“我也不知道为什么。”', '情感钩', '孤独共鸣', '孤独共鸣内容带来“被理解”的粘性。', '/videos/25/25f_solo_1.png'),
+      vid('25f_solo_2', '🏠 独居租房：安全感从这些细节来', '“别省。”', '焦虑钩', '城市生存', '安全焦虑促收藏与复刷。', '/videos/25/25f_solo_2.png'),
+      vid('25f_solo_3', '🥲 “我是不是不够优秀？”同龄对比太痛了', '“我被击中。”', '情感钩', '同龄对比', '对比叙事引发评论自曝。', '/videos/25/25f_solo_3.png'),
+      vid('25f_solo_4', '🫧 治愈vlog：把自己哄好就行', '“先不崩。”', '解压钩', '治愈放松', '治愈内容延长停留与复刷。', '/videos/25/25f_solo_4.png'),
+      vid('25f_solo_5', '💄 低成本变好看：上班也能很体面', '“气质很重要。”', '欲望钩', '外貌提升', '外貌提升提供控制感与即时奖励。', '/videos/25/25f_solo_5.png')
     ]
   }
 ];
