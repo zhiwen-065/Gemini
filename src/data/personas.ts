@@ -163,8 +163,8 @@ export const PERSONAS: PersonaTemplate[] = [
   {
     id: 'f18_idol_only',
     name: '18岁女·追星派',
-    ageMin: 18,
-    ageMax: 18,
+    ageMin: 15,
+    ageMax: 23,
     gender: '女',
     coreHook: '情感钩',
     avatar: '/avatars/f18_idol.png',
@@ -245,8 +245,8 @@ export const PERSONAS: PersonaTemplate[] = [
   {
     id: 'm20_esports_only',
     name: '20岁男·电竞派',
-    ageMin: 20,
-    ageMax: 20,
+    ageMin: 15,
+    ageMax: 23,
     gender: '男',
     coreHook: '刺激钩',
     avatar: '/avatars/m20_esports.png',
