@@ -32,17 +32,43 @@ export type PersonaTemplate = {
   trapPaths: string[];
 
   /**
+   * ✅ NEW 1：人物“兴趣标签”（用于匹配 video_library 的 tags）
+   * - 可空：不写表示不强制兴趣
+   * - reco.ts 可以把它当做：优先/加权
+   */
+  interests?: Interest[];
+
+  /**
+   * ✅ NEW 2：讲座“典型5条结构”的偏好视频id（不写死feed）
+   * - reco.ts 可以对这些id加分，让它们更容易被抽到
+   */
+  preferredVideoIds?: string[];
+
+  /**
+   * ✅ NEW 3：排除项（可选）
+   * - 比如你不希望青少年刷到擦边、或某些persona不出猎奇
+   */
+  excludeHookSubCategories?: string[]; // e.g. ['性吸引力/擦边']
+
+  /**
    * ✅ 视频筛选策略（关键）
-   * - count：每次抽几条（你说固定5条）
-   * - allowedHooks：可选，限制钩子类型（更可控）
-   * - preferInterests：可选，抽取时更偏向兴趣匹配（但不强制）
    */
   videoPolicy?: {
     count: number; // 默认 5
     allowedHookCategories?: Array<'欲望钩' | '焦虑钩' | '情感钩' | '解压钩' | '刺激钩'>;
+
+    // ✅ preferInterests 你已经有了，保留
     preferInterests?: Interest[];
+
+    /**
+     * ✅ NEW 4：是否允许“兜底视频”
+     * - 你说“视频可能同时出现在不同年龄/性别”
+     * - 那就需要一个 "不限人群" 的通用池
+     */
+    allowGeneric?: boolean; // 默认 true
   };
 };
+
 
 /**
  * ✅ 总人物库：
