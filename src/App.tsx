@@ -1,119 +1,145 @@
-// src/logic/reco.ts
-import type { PersonaTemplate, Gender, Interest } from '../data/personas';
-import { VIDEO_LIBRARY_ALL, type VideoItem } from '../data/video_library';
+// src/App.tsx
+import React, { useMemo, useState } from 'react';
+import { PERSONAS, type Gender, type Interest, type PersonaTemplate } from './data/personas';
+import { VIDEO_LIBRARY_ALL, type VideoItem } from './data/video_library';
+import { pickPersona } from './logic/persona_pick';
+import { generateFeedForPersona } from './logic/reco';
 
-/**
- * 性别匹配：
- * - 视频 tags.genders 里有 '不限' => 任何 persona 都能看
- * - persona 是 '不限' => 男女都能看
- * - 否则要求包含 persona.gender
- */
-const genderMatch = (personaGender: Gender, videoGenders: Gender[]) => {
-  if (videoGenders.includes('不限')) return true;
-  if (personaGender === '不限') return true;
-  return videoGenders.includes(personaGender);
-};
+const INTERESTS: Interest[] = ['运动', '追星', '宠物', '旅游', '理财', '游戏', '学习', '美妆'];
+const GENDERS: Gender[] = ['女', '男', '不限'];
 
-/** 年龄匹配：用当前 persona 的具体 age 去匹配 video.tags.ageMin~ageMax */
-const ageMatch = (age: number, v: VideoItem) =>
-  age >= v.tags.ageMin && age <= v.tags.ageMax;
+export default function App() {
+  const [age, setAge] = useState<number>(20);
+  const [gender, setGender] = useState<Gender>('女');
+  const [interest, setInterest] = useState<Interest | ''>('');
 
-/**
- * 兴趣匹配（软约束）：
- * - 没选兴趣 => 不限制
- * - 视频没兴趣标签（空/undefined）=> 视为通用可匹配
- * - 否则要求包含该兴趣
- */
-const interestMatch = (interest: Interest | undefined, v: VideoItem) => {
-  if (!interest) return true;
-  const tags = v.tags.interests;
-  if (!tags || tags.length === 0) return true;
-  return tags.includes(interest);
-};
-
-const shuffle = <T,>(arr: T[], rng: () => number = Math.random) => {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-};
-
-const uniquePick = <T,>(arr: T[], n: number) => arr.slice(0, Math.max(0, n));
-
-/**
- * ✅ 给某个 persona 生成视频流
- * - 强约束：年龄、性别、allowedHookCategories（若配置）
- * - 软偏好：interest（若传入），persona.videoPolicy.preferInterests（加权）
- * - 不够 count 条会自动放宽：先放宽 interest，再放宽 hook
- */
-export function generateFeedForPersona(
-  persona: PersonaTemplate,
-  options: {
-    age: number;        // 当前人物具体年龄（例如 20）
-    interest?: Interest; // 当前选择的兴趣（可选）
-    rng?: () => number;  // 可传入种子随机，方便演示可复现
-  }
-): VideoItem[] {
-  const { age, interest, rng = Math.random } = options;
-  const count = persona.videoPolicy?.count ?? 5;
-
-  // 1) 基础过滤：年龄 + 性别（强约束）
-  let candidates = VIDEO_LIBRARY_ALL.filter(
-    v => ageMatch(age, v) && genderMatch(persona.gender, v.tags.genders)
+  const [persona, setPersona] = useState<PersonaTemplate>(() =>
+    pickPersona({ age: 20, gender: '女' })
+  );
+  const [feed, setFeed] = useState<VideoItem[]>(() =>
+    generateFeedForPersona(persona, { age: 20, interest: undefined })
   );
 
-  // 2) 钩子限制（强约束，可选）
-  const allowedHooks = persona.videoPolicy?.allowedHookCategories;
-  if (allowedHooks && allowedHooks.length > 0) {
-    // 注意：VideoItem.hookCategory 可能是 string，这里做 includes 判断即可
-    candidates = candidates.filter(v => allowedHooks.includes(v.hookCategory as any));
-  }
+  const matchedPersonaCount = useMemo(() => {
+    return PERSONAS.filter((p: PersonaTemplate) => age >= p.ageMin && age <= p.ageMax).length;
+  }, [age]);
 
-  // 3) 兴趣软匹配：打分排序（偏好强的排前面）
-  const preferInterests = persona.videoPolicy?.preferInterests ?? [];
-  const scored = candidates
-    .map(v => {
-      let score = 0;
+  const regeneratePersona = () => {
+    const p = pickPersona({ age, gender });
+    setPersona(p);
+    const f = generateFeedForPersona(p, { age, interest: interest || undefined });
+    setFeed(f);
+  };
 
-      // 用户当前兴趣：强加分
-      if (interest && v.tags.interests?.includes(interest)) score += 100;
+  const regenerateFeedOnly = () => {
+    const f = generateFeedForPersona(persona, { age, interest: interest || undefined });
+    setFeed(f);
+  };
 
-      // persona 偏好兴趣：中等加分
-      for (const pi of preferInterests) {
-        if (v.tags.interests?.includes(pi)) score += 20;
-      }
+  return (
+    <div style={{ padding: 16, fontFamily: 'system-ui, -apple-system' }}>
+      <h2 style={{ marginBottom: 8 }}>Persona + Video Library Demo（可 build 版）</h2>
 
-      // 通用视频（无兴趣标签）给一点点分，避免全被兴趣视频挤掉
-      if (!v.tags.interests || v.tags.interests.length === 0) score += 5;
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+        <label>
+          年龄：
+          <input
+            type="number"
+            value={age}
+            min={15}
+            max={75}
+            onChange={(e) => setAge(Number(e.target.value))}
+            style={{ width: 80, marginLeft: 6 }}
+          />
+        </label>
 
-      return { v, score };
-    })
-    .sort((a, b) => b.score - a.score)
-    .map(x => x.v);
+        <label>
+          性别：
+          <select value={gender} onChange={(e) => setGender(e.target.value as Gender)} style={{ marginLeft: 6 }}>
+            {GENDERS.map((g: Gender) => (
+              <option key={g} value={g}>
+                {g}
+              </option>
+            ))}
+          </select>
+        </label>
 
-  // 4) 先按兴趣做一次“更贴合”的筛选，不够再放宽（不强制兴趣）
-  let pool = scored.filter(v => interestMatch(interest, v));
-  if (pool.length < count) pool = scored;
+        <label>
+          兴趣：
+          <select
+            value={interest}
+            onChange={(e) => setInterest(e.target.value as Interest | '')}
+            style={{ marginLeft: 6 }}
+          >
+            <option value="">（不选）</option>
+            {INTERESTS.map((it: Interest) => (
+              <option key={it} value={it}>
+                {it}
+              </option>
+            ))}
+          </select>
+        </label>
 
-  // 5) 随机抽取 count 条（同一个 video 不会重复，因为库里本身 id 唯一；这里仍按 slice）
-  let picked = uniquePick(shuffle(pool, rng), count);
+        <button onClick={regeneratePersona} style={{ padding: '6px 10px' }}>
+          抽一个 Persona + 生成 5 条视频
+        </button>
 
-  // 6) 兜底：如果还不够（通常是视频库太小/钩子限制太严）
-  //    放宽 hook 限制（但仍保留年龄+性别强约束）
-  if (picked.length < count) {
-    const relaxed = VIDEO_LIBRARY_ALL.filter(
-      v => ageMatch(age, v) && genderMatch(persona.gender, v.tags.genders)
-    );
+        <button onClick={regenerateFeedOnly} style={{ padding: '6px 10px' }}>
+          只刷新 5 条视频（同 Persona）
+        </button>
+      </div>
 
-    const remain = count - picked.length;
-    const more = uniquePick(
-      shuffle(relaxed.filter(v => !picked.some(p => p.id === v.id)), rng),
-      remain
-    );
-    picked = [...picked, ...more];
-  }
+      <div style={{ marginTop: 8, opacity: 0.8 }}>
+        当前年龄命中的 Persona 卡数：{matchedPersonaCount}（包含 20–25 细分 + 大段兜底）
+      </div>
 
-  return picked;
+      <hr style={{ margin: '16px 0' }} />
+
+      <h3 style={{ marginBottom: 8 }}>当前 Persona</h3>
+      <div style={{ border: '1px solid #ddd', borderRadius: 12, padding: 12 }}>
+        <div style={{ fontWeight: 700 }}>{persona.name}</div>
+        <div style={{ marginTop: 6, display: 'grid', gap: 4 }}>
+          <div>
+            标签：{persona.ageMin}-{persona.ageMax} / {persona.gender} / 核心钩子：{persona.coreHook}
+          </div>
+          <div>阶段：{persona.lifeStage}</div>
+          <div>情绪：{persona.emotion}</div>
+          <div>钩子排序：{persona.hookRanking.join(' / ')}</div>
+          <div>陷阱路径：{persona.trapPaths.join(' | ')}</div>
+          <div style={{ opacity: 0.85 }}>
+            videoPolicy：
+            {JSON.stringify(persona.videoPolicy ?? { count: 5 }, null, 2)}
+          </div>
+        </div>
+      </div>
+
+      <hr style={{ margin: '16px 0' }} />
+
+      <h3 style={{ marginBottom: 8 }}>推荐视频（随机抽取 5 条）</h3>
+      <div style={{ display: 'grid', gap: 10 }}>
+        {feed.map((v: VideoItem) => (
+          <div key={v.id} style={{ border: '1px solid #eee', borderRadius: 12, padding: 12 }}>
+            <div style={{ fontWeight: 700 }}>
+              {v.title} <span style={{ opacity: 0.7, fontWeight: 400 }}>({v.hookCategory}/{v.hookSubCategory})</span>
+            </div>
+            <div style={{ marginTop: 6, opacity: 0.9 }}>{v.caption}</div>
+            <div style={{ marginTop: 8, fontSize: 12, opacity: 0.85 }}>
+              为什么推：{v.pushLogic}
+            </div>
+            <div style={{ marginTop: 8, fontSize: 12, opacity: 0.75 }}>
+              tags：age {v.tags.ageMin}-{v.tags.ageMax} / genders {v.tags.genders.join(',')}
+              {v.tags.interests?.length ? ` / interests ${v.tags.interests.join(',')}` : ' / interests 通用'}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <hr style={{ margin: '16px 0' }} />
+
+      <details>
+        <summary>（可选）查看当前视频库总量</summary>
+        <div style={{ marginTop: 8 }}>VIDEO_LIBRARY_ALL: {VIDEO_LIBRARY_ALL.length} 条</div>
+      </details>
+    </div>
+  );
 }
