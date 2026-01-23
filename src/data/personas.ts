@@ -1,3 +1,10 @@
+import { PERSONAS_20_25 } from './personas_20_25';
+
+export const PERSONAS: PersonaTemplate[] = [
+  ...PERSONAS_20_25,
+  // ...你原来的其它年龄段 personas
+];
+
 export type Gender = '男' | '女' | '不限';
 
 export type Interest =
