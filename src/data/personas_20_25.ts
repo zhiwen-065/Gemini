@@ -1,11 +1,14 @@
 // src/data/personas_20_25.ts
 import type { PersonaTemplate, Interest } from './personas';
 
+// ✅ 关键修复：videoPolicy 是可选的，所以要先 NonNullable
+type AllowedHooks = NonNullable<PersonaTemplate['videoPolicy']>['allowedHookCategories'];
+
 const policy = (p: {
   count?: number;
-  allowed?: PersonaTemplate['videoPolicy']['allowedHookCategories'];
+  allowed?: AllowedHooks;
   prefer?: Interest[];
-}): PersonaTemplate['videoPolicy'] => ({
+}): NonNullable<PersonaTemplate['videoPolicy']> => ({
   count: p.count ?? 5,
   allowedHookCategories: p.allowed,
   preferInterests: p.prefer ?? []
