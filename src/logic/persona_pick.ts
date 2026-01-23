@@ -1,45 +1,42 @@
 // src/logic/persona_pick.ts
-import type { PersonaTemplate, Gender } from '../data/personas';
+import type { Gender, PersonaTemplate } from '../data/personas';
 import { PERSONAS } from '../data/personas';
 
-const genderCompatible = (personaGender: Gender, inputGender: Gender) => {
-  // inputGender 代表你想“生成的是男/女/不限用户”
-  if (inputGender === '不限') return true;
+const genderMatch = (personaGender: Gender, wanted: Gender) => {
+  if (wanted === '不限') return true;
   if (personaGender === '不限') return true;
-  return personaGender === inputGender;
+  return personaGender === wanted;
 };
 
-export function getCandidatePersonas(params: {
-  age: number;           // 例如 20
-  gender?: Gender;       // 例如 '男' | '女' | '不限'
-}) {
-  const { age, gender = '不限' } = params;
+export function pickPersona(options: {
+  age: number;
+  gender: Gender;
+  rng?: () => number;
+}): PersonaTemplate {
+  const { age, gender, rng = Math.random } = options;
 
-  return PERSONAS.filter(p => {
+  const candidates = PERSONAS.filter((p: PersonaTemplate) => {
     const ageOk = age >= p.ageMin && age <= p.ageMax;
-    const genderOk = genderCompatible(p.gender, gender);
+    const genderOk = genderMatch(p.gender, gender);
     return ageOk && genderOk;
   });
-}
 
-/**
- * ✅ 如果你希望“优先选中更精确的人物”
- * - 比如 20岁：优先 ageMin=20 ageMax=20 的 persona
- * - 其次才是覆盖范围更大的 persona
- */
-export function pickPersonaForUser(params: {
-  age: number;
-  gender?: Gender;
-  rng?: () => number;
-}): PersonaTemplate | null {
-  const { age, gender = '不限', rng = Math.random } = params;
-  const candidates = getCandidatePersonas({ age, gender });
+  // ✅ 优先更细分（年龄跨度更小）
+  const sorted = [...candidates].sort((a: PersonaTemplate, b: PersonaTemplate) => {
+    const spanA = a.ageMax - a.ageMin;
+    const spanB = b.ageMax - b.ageMin;
+    return spanA - spanB;
+  });
 
-  if (candidates.length === 0) return null;
+  // 取最细的一档（例如 span=0 的全部）
+  const bestSpan = sorted.length ? sorted[0].ageMax - sorted[0].ageMin : 999;
+  const best = sorted.filter((p: PersonaTemplate) => p.ageMax - p.ageMin === bestSpan);
 
-  const exact = candidates.filter(p => p.ageMin === age && p.ageMax === age);
-  const pool = exact.length > 0 ? exact : candidates;
+  if (best.length === 0) {
+    // 极端兜底：返回第一个
+    return PERSONAS[0];
+  }
 
-  const idx = Math.floor(rng() * pool.length);
-  return pool[idx];
+  const idx = Math.floor(rng() * best.length);
+  return best[idx];
 }
